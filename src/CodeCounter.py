@@ -61,6 +61,10 @@ def findFiles(filetype, meth):
     #printStats(re[0],re[1])
     
     
+def luki(lol):
+    return "loool"
+    
+    
 def printStats(topz,fails):
     
     print(len(topz),"READABLE files found!")
