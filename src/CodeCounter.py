@@ -83,8 +83,6 @@ def printStats(topz,fails):
     else:
         print("Not enough data for top3/low3 :(")
     
-
-
 #findFiles((""),"lcountEarly")
 #findFiles((""),"lcountLate")
 e = Timer(lambda: findFiles((""),"lcountEarly"))
