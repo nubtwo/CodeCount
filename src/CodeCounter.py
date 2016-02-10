@@ -38,17 +38,17 @@ def printStats(topz,fails):
     print(statistics.median([x[0] for x in topz]),"lines is median")
     print()
     if len(topz) > 2:
-        print("--- Start Top3 ---")
+        print("--- Start Top5 ---")
         print("Linecount - Filename")
-        for x in range(1,4):
+        for x in range(1,6):
             print(topz[len(topz)-x][0],"  -  ",topz[len(topz)-x][1])
-        print("--- Stop Top3 ---")
+        print("--- Stop Top5 ---")
         print()
-        print("--- Start Low3 ---")
+        print("--- Start Low5 ---")
         print("Linecount - Filename")
-        for x in range(3):
+        for x in range(5):
             print(topz[x][0],"  -  ",topz[x][1])
-        print("--- Stop Low3 ---")
+        print("--- Stop Low5 ---")
     else:
         print("Not enough data for top3/low3 :(")
     
