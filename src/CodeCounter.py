@@ -4,30 +4,10 @@ Created on 13.01.2016
 @author: Admin
 '''
 
-import bisect
 import statistics
 import os
-import timeit
-from timeit import Timer
-
-
-def lcountEarly(filelist):
-    topz = []
-    fails = []
     
-    for x in range(len(filelist)):
-        zeilen = 0
-        try:
-            for l in open(filelist[x]).readlines():
-                if len(l.strip()) > 0:
-                    zeilen +=1
-            bisect.insort_left(topz, [zeilen,filelist[x]])
-        except:
-            fails.append([-1,filelist[x]])
-            pass
-    return [topz,fails]
-    
-def lcountLate(filelist):
+def countLines(filelist):
     topz = []
     fails = []
     for x in range(len(filelist)):
@@ -42,31 +22,16 @@ def lcountLate(filelist):
             pass
     return([sorted(topz, key=lambda x: x[0]),fails])
 
-    
-def findFiles(filetype, meth):
+def findFiles(filetype,minbytes):
     filelist = []
     for path,_folders,files in os.walk('.'):
         for file in files:
-            if file.endswith(filetype):
+            if file.endswith(filetype) and os.path.getsize(os.path.join(path, file)) >= minbytes:
                 filelist.append(os.path.join(path, file))
-    
-    if meth == "lcountEarly":
-        re = lcountEarly(filelist)
-    if meth == "lcountLate":
-        re = lcountLate(filelist)
-    #if method == "dcountEarly":
-    #    re = lcountEarly(filelist)
-    #if method == "dcountLate":
-    #    re = lcountEarly(filelist)
-    #printStats(re[0],re[1])
-    
-    
-def luki(lol):
-    return "loool"
-    
+    gehtbesser = countLines(filelist)
+    printStats(gehtbesser[0], gehtbesser[1])
     
 def printStats(topz,fails):
-    
     print(len(topz),"READABLE files found!")
     print(len(fails),"UNREADABLE files found!")
     print(round(statistics.mean([x[0] for x in topz]),2),"lines is avg!")
@@ -87,16 +52,6 @@ def printStats(topz,fails):
     else:
         print("Not enough data for top3/low3 :(")
     
-#findFiles((""),"lcountEarly")
-#findFiles((""),"lcountLate")
-e = Timer(lambda: findFiles((""),"lcountEarly"))
-l = Timer(lambda: findFiles((""),"lcountLate"))
-findFiles((""),"lcountEarly")
-findFiles((""),"lcountLate")
-#
-early = (e.timeit(number=100))
-late = (l.timeit(number=100))
-print("Early: ",early)
-print("Late: ",late)
+findFiles("",1000)
 
 
