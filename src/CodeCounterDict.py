@@ -37,8 +37,8 @@ def findFiles(filetype,minbytes):
 def printStats(filelist):
     print(len([x for x in filelist if filelist[x]['valid']]),"READABLE files found!")
     print(len([x for x in filelist if not filelist[x]['valid']]),"UNREADABLE files found!")
-    print(round(statistics.mean(filelist[x]['linecount'] for x in filelist),2),"lines is avg!")
-    print(statistics.median(filelist[x]['linecount'] for x in filelist),"lines is median")
+    print(round(statistics.mean(filelist[x]['linecount'] for x in filelist if filelist[x]['valid']),2),"lines is avg!")
+    print(statistics.median(filelist[x]['linecount'] for x in filelist if filelist[x]['valid']),"lines is median")
     print()
     if len([x for x in filelist if filelist[x]['valid']]) > 2:
         print("--- Start Top5 ---")
