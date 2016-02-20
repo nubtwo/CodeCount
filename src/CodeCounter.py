@@ -4,9 +4,24 @@ Created on 13.01.2016
 @author: Admin
 '''
 
+import argparse
 import statistics
 import os
-    
+
+parser = argparse.ArgumentParser(description='This tool counts line of all files found recursively')
+parser.add_argument('-s','--skipfolders',help='while searching skip all folders in ["list"]', required=False, default = [""])
+parser.add_argument('-f','--filetypes',help='only search files ending with extensions in ["list"]', required=False, default = [""])
+parser.add_argument('-i','--minsize',help='in filesize in bytes', type=int, required=False, default = 0)
+parser.add_argument('-a','--maxsize', help='max filesize in bytes', type=int ,required=False, default = 0)
+args = parser.parse_args()
+
+print("Working with settings(to adjust see -h)...")
+print("List of folder to skip: ",args.skipfolders)
+print("List of file ext to search: ",args.filetypes)
+print("Files with min size of (default = 0): ",args.minsize)
+print("Files with max size of (default = 0): ",args.maxsize)
+print()
+
 def countLines(filelist):
     topz = []
     fails = []
@@ -22,22 +37,31 @@ def countLines(filelist):
             pass
     return([sorted(topz, key=lambda x: x[0]),fails])
 
-def findFiles(filetype,minbytes):
+def findFiles(filetype,skipfolders,minsize,maxsize):
     filelist = []
-    for path,_folders,files in os.walk('.'):
+    for path,folders,files in os.walk('.',topdown=True):
+        for f in skipfolders:                                               # skipping folders
+            if f in folders:
+                folders.remove(f) 
         for file in files:
-            if file.endswith(filetype) and os.path.getsize(os.path.join(path, file)) >= minbytes:
-                filelist.append(os.path.join(path, file))
+            if file.endswith(tuple(filetype)):                              # skipping files
+                if os.path.getsize(os.path.join(path, file)) >= minsize:    # checking filesizes
+                    if maxsize > 0:
+                        if os.path.getsize(os.path.join(path, file)) <= maxsize:
+                            filelist.append(os.path.join(path, file))
+                    else:
+                        filelist.append(os.path.join(path, file))
+
     gehtbesser = countLines(filelist)
     printStats(gehtbesser[0], gehtbesser[1])
     
 def printStats(topz,fails):
     print(len(topz),"READABLE files found!")
     print(len(fails),"UNREADABLE files found!")
-    print(round(statistics.mean([x[0] for x in topz]),2),"lines is avg!")
-    print(statistics.median([x[0] for x in topz]),"lines is median")
-    print()
     if len(topz) > 2:
+        print(round(statistics.mean([x[0] for x in topz]),2),"lines is avg!")
+        print(statistics.median([x[0] for x in topz]),"lines is median")
+        print()
         print("--- Start Top5 ---")
         print("Linecount - Filename")
         for x in range(1,6):
@@ -50,8 +74,14 @@ def printStats(topz,fails):
             print(topz[x][0],"  -  ",topz[x][1])
         print("--- Stop Low5 ---")
     else:
-        print("Not enough data for top3/low3 :(")
+        print("Not enough data for further statistics :(")
     
-findFiles("",1000)
+findFiles(args.skipfolders,args.filetypes,args.minsize,args.maxsize)
+''' Thoughts:
+1. findFiles Argumente ubergeben oder soll sich die Funktion die Dinger selber holen uber args.XXXX?
+2. Alles in eine Klasse packen, die Methoden rufen sich gehenseitig auf, arbeiten aber all an einer Klassen?variable,
+ubergeben sich also keine Sachen hin und her mehr.
+3. Skipfolders nur in . oder auch in subfolderns?
+4. Funktioniert alles, aber iwie alles dirty in der Umsetzung
 
-
+'''
